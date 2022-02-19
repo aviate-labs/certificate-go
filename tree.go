@@ -2,8 +2,11 @@ package cert
 
 import "crypto/sha256"
 
-type HashTree interface {
-	Reconstruct() [32]byte
+func domainSeperator(t string) []byte {
+	return append(
+		[]byte{uint8(len(t))},
+		[]byte(t)...,
+	)
 }
 
 type Empty struct{}
@@ -26,8 +29,14 @@ func (f Fork) Reconstruct() [32]byte {
 	))
 }
 
+type HashTree interface {
+	Reconstruct() [32]byte
+}
+
+type Label []byte
+
 type Labeled struct {
-	Label []byte
+	Label Label
 	Tree  HashTree
 }
 
@@ -52,11 +61,4 @@ type Pruned [32]byte
 
 func (p Pruned) Reconstruct() [32]byte {
 	return p
-}
-
-func domainSeperator(t string) []byte {
-	return append(
-		[]byte{uint8(len(t))},
-		[]byte(t)...,
-	)
 }
