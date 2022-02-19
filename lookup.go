@@ -2,36 +2,47 @@ package cert
 
 import "bytes"
 
-func LookupLabel(tree Node, label Label) (Node, LabelResult) {
-	switch n := tree.(type) {
-	case Labeled:
-		switch bytes.Compare(label, n.Label) {
-		case 1: // a > b
-			return nil, Continue
-		case -1: // a < b
-			return nil, Absent
-		}
-		return n.Tree, Found
-	case Fork:
-		switch v, lr := LookupLabel(n.LeftTree, label); lr {
-		case Continue, Unknown:
-			switch v, rr := LookupLabel(n.RightTree, label); rr {
-			case Absent:
-				if lr == Unknown {
-					return nil, Unknown
-				}
-				return nil, Absent
-			default:
-				return v, rr
-			}
+func Lookup(path [][]byte, node Node) []byte {
+	if len(path) == 0 {
+		switch n := node.(type) {
+		case Leaf:
+			return n
 		default:
-			return v, lr
+			return nil
 		}
-	case Pruned:
-		return nil, Unknown
-	default:
-		return nil, Absent
 	}
+
+	n := findLabel(flattenNode(node), path[0])
+	if n != nil {
+		return Lookup(path[1:], *n)
+	}
+	return nil
+}
+
+func flattenNode(node Node) []Node {
+	switch n := node.(type) {
+	case Empty:
+		return nil
+	case Fork:
+		return append(
+			flattenNode(n.LeftTree),
+			flattenNode(n.RightTree)...,
+		)
+	default:
+		return []Node{node}
+	}
+}
+
+func findLabel(nodes []Node, label Label) *Node {
+	for _, node := range nodes {
+		switch n := node.(type) {
+		case Labeled:
+			if bytes.Equal(label, n.Label) {
+				return &n.Tree
+			}
+		}
+	}
+	return nil
 }
 
 type LabelResult string

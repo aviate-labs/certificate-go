@@ -1,36 +1,27 @@
 package cert_test
 
 import (
-	"testing"
+	"fmt"
 
 	cert "github.com/aviate-labs/certificate-go"
 )
 
-func TestLookupLabel(t *testing.T) {
-	for _, l := range []string{
-		"a", "b", "c", "d",
-	} {
-		_, r := cert.LookupLabel(tree, []byte(l))
-		if r != cert.Found {
-			t.Error(r, l)
-		}
+func path(p ...string) [][]byte {
+	var path [][]byte
+	for _, p := range p {
+		path = append(path, []byte(p))
 	}
+	return path
+}
 
-	for _, l := range []string{
-		"x", "y", "e",
-	} {
-		_, r := cert.LookupLabel(tree, []byte(l))
-		if r != cert.Continue {
-			t.Error(r, l)
-		}
-	}
-
-	for _, l := range []string{
-		"absent",
-	} {
-		_, r := cert.LookupLabel(tree, []byte(l))
-		if r != cert.Absent {
-			t.Error(r, l)
-		}
-	}
+func ExampleLookup() {
+	fmt.Println(string(cert.Lookup(path("a", "x"), tree)))
+	fmt.Println(string(cert.Lookup(path("a", "y"), tree)))
+	fmt.Println(string(cert.Lookup(path("b"), tree)))
+	fmt.Println(string(cert.Lookup(path("d"), tree)))
+	// Output:
+	// hello
+	// world
+	// good
+	// morning
 }
