@@ -105,10 +105,10 @@ func Deserialize(data []byte) (Node, error) {
 	if err := cbor.Unmarshal(data, &s); err != nil {
 		return nil, err
 	}
-	return deserialize(s)
+	return DeserializeNode(s)
 }
 
-func deserialize(s []interface{}) (Node, error) {
+func DeserializeNode(s []interface{}) (Node, error) {
 	tag, ok := s[0].(uint64)
 	if !ok {
 		return nil, fmt.Errorf("unknown tag: %v", s[0])
@@ -127,7 +127,7 @@ func deserialize(s []interface{}) (Node, error) {
 		if !ok {
 			return nil, fmt.Errorf("unknown value: %v", s[1])
 		}
-		l, err := deserialize(lt)
+		l, err := DeserializeNode(lt)
 		if err != nil {
 			return nil, err
 		}
@@ -135,7 +135,7 @@ func deserialize(s []interface{}) (Node, error) {
 		if !ok {
 			return nil, fmt.Errorf("unknown value: %v", s[2])
 		}
-		r, err := deserialize(rt)
+		r, err := DeserializeNode(rt)
 		if err != nil {
 			return nil, err
 		}
@@ -155,7 +155,7 @@ func deserialize(s []interface{}) (Node, error) {
 		if !ok {
 			return nil, fmt.Errorf("unknown value: %v", s[2])
 		}
-		t, err := deserialize(rt)
+		t, err := DeserializeNode(rt)
 		if err != nil {
 			return nil, err
 		}
