@@ -6,14 +6,6 @@ import (
 	cert "github.com/aviate-labs/certificate-go"
 )
 
-func path(p ...string) [][]byte {
-	var path [][]byte
-	for _, p := range p {
-		path = append(path, []byte(p))
-	}
-	return path
-}
-
 func ExampleLookup() {
 	fmt.Println(string(cert.Lookup(path("a", "x"), tree)))
 	fmt.Println(string(cert.Lookup(path("a", "y"), tree)))
@@ -24,4 +16,12 @@ func ExampleLookup() {
 	// world
 	// good
 	// morning
+}
+
+func path(p ...string) [][]byte {
+	var path [][]byte
+	for _, p := range p {
+		path = append(path, []byte(p))
+	}
+	return path
 }

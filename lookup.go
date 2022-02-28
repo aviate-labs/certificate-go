@@ -19,19 +19,14 @@ func Lookup(path [][]byte, node Node) []byte {
 	return nil
 }
 
-func flattenNode(node Node) []Node {
-	switch n := node.(type) {
-	case Empty:
-		return nil
-	case Fork:
-		return append(
-			flattenNode(n.LeftTree),
-			flattenNode(n.RightTree)...,
-		)
-	default:
-		return []Node{node}
-	}
-}
+type LabelResult string
+
+const (
+	Absent   LabelResult = "absent"
+	Continue LabelResult = "continue"
+	Found    LabelResult = "found"
+	Unknown  LabelResult = "unknown"
+)
 
 func findLabel(nodes []Node, label Label) *Node {
 	for _, node := range nodes {
@@ -45,11 +40,16 @@ func findLabel(nodes []Node, label Label) *Node {
 	return nil
 }
 
-type LabelResult string
-
-const (
-	Absent   LabelResult = "absent"
-	Continue LabelResult = "continue"
-	Found    LabelResult = "found"
-	Unknown  LabelResult = "unknown"
-)
+func flattenNode(node Node) []Node {
+	switch n := node.(type) {
+	case Empty:
+		return nil
+	case Fork:
+		return append(
+			flattenNode(n.LeftTree),
+			flattenNode(n.RightTree)...,
+		)
+	default:
+		return []Node{node}
+	}
+}

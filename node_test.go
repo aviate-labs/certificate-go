@@ -87,7 +87,7 @@ func ExampleDeserialize() {
 	data, _ := hex.DecodeString("8301830183024161830183018302417882034568656c6c6f810083024179820345776f726c6483024162820344676f6f648301830241638100830241648203476d6f726e696e67")
 	fmt.Println(cert.Deserialize(data))
 	// Output:
-	// {{{a {{{x [104 101 108 108 111]} {}} {y [119 111 114 108 100]}}} {b [103 111 111 100]}} {{c {}} {d [109 111 114 110 105 110 103]}}} <nil>
+	// {{a:{{x:hello|∅}|y:world}|b:good}|{c:∅|d:morning}} <nil>
 }
 
 func ExamplePruned() {

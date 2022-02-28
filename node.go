@@ -54,6 +54,10 @@ func (e Empty) Reconstruct() [32]byte {
 	return sha256.Sum256(domainSeperator("ic-hashtree-empty"))
 }
 
+func (e Empty) String() string {
+	return "∅"
+}
+
 type Fork struct {
 	LeftTree  Node
 	RightTree Node
@@ -66,6 +70,10 @@ func (f Fork) Reconstruct() [32]byte {
 		domainSeperator("ic-hashtree-fork"),
 		append(l[:], r[:]...)...,
 	))
+}
+
+func (f Fork) String() string {
+	return fmt.Sprintf("{%s|%s}", f.LeftTree, f.RightTree)
 }
 
 type Label []byte
@@ -87,6 +95,10 @@ func (l Labeled) Reconstruct() [32]byte {
 	))
 }
 
+func (l Labeled) String() string {
+	return fmt.Sprintf("%s:%s", l.Label, l.Tree)
+}
+
 type Leaf []byte
 
 func (l Leaf) Reconstruct() [32]byte {
@@ -96,8 +108,13 @@ func (l Leaf) Reconstruct() [32]byte {
 	))
 }
 
+func (l Leaf) String() string {
+	return string(l)
+}
+
 type Node interface {
 	Reconstruct() [32]byte
+	fmt.Stringer
 }
 
 func Deserialize(data []byte) (Node, error) {
@@ -195,4 +212,8 @@ type Pruned [32]byte
 
 func (p Pruned) Reconstruct() [32]byte {
 	return p
+}
+
+func (p Pruned) String() string {
+	return fmt.Sprintf("0x%x", p[:])
 }
