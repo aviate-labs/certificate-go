@@ -3,6 +3,7 @@ package cert
 import (
 	"crypto/sha256"
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/fxamacker/cbor/v2"
 )
@@ -109,7 +110,10 @@ func (l Leaf) Reconstruct() [32]byte {
 }
 
 func (l Leaf) String() string {
-	return string(l)
+	if utf8.Valid(l) {
+		return string(l)
+	}
+	return fmt.Sprintf("0x%x", []byte(l))
 }
 
 type Node interface {

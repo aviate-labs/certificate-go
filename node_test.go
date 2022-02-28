@@ -3,6 +3,7 @@ package cert_test
 import (
 	"encoding/hex"
 	"fmt"
+	"testing"
 
 	cert "github.com/aviate-labs/certificate-go"
 )
@@ -133,4 +134,18 @@ func h2b(s string) [32]byte {
 	b, _ := hex.DecodeString(s)
 	copy(bs[:], b)
 	return bs
+}
+
+func TestUFT8Leaf(t *testing.T) {
+	// []byte{0x90, 0xe4, 0xcf, 0xfc, 0xda, 0x94, 0x83, 0xec, 0x16} is the unsigned leb128 encoding of 1646079569558762000.
+	// Which is Mon Feb 28 2022 20:19:29 GMT+0000 in nanoseconds unix time.
+	l := cert.Leaf([]byte{0x90, 0xe4, 0xcf, 0xfc, 0xda, 0x94, 0x83, 0xec, 0x16})
+	if l.String() != "0x90e4cffcda9483ec16" {
+		t.Error(l)
+	}
+
+	s := cert.Leaf([]byte("some string"))
+	if s.String() != "some string" {
+		t.Error(l)
+	}
 }
